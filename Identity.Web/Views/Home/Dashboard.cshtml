@@ -1,0 +1,428 @@
+﻿<!doctype html>
+<html>
+<head>
+    <title>Bar Chart</title>
+
+    <script src="~/Scripts/Chart.js"></script>
+    @* <script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.bundle.min.js"></script>*@
+    <style>
+        body {
+            background: #1D1F20;
+            padding: 16px;
+        }
+
+        canvas {
+            /*border: 1px dotted red;*/
+            /*background-color: rgba(255, 255, 255, 0.9);*/
+        }
+
+        .chart-container {
+            position: relative;
+            margin: auto;
+            /*height: 80vh;
+            width: 80vw;*/
+        }
+    </style>
+
+</head>
+<body>
+
+    <div class="col-md-10">
+
+        <div class="block block-drop-shadow">
+            <div class="head bg-default bg-light-ltr">
+                <div class="row">
+                    <div style="width: 33%;float: left;padding-left: 10px;">
+                        <canvas id="canvas" height="230" width="150"></canvas>
+                    </div>
+                    <div style="width: 33%;float: left;padding-left: 10px;">
+                        <canvas id="canvas2" height="103" width="150"></canvas>
+                    </div>
+                    <div style="width: 33%;float: left;padding-left: 10px;">
+                        <canvas id="canvas3" height="230" width="150"></canvas>
+                    </div>
+                </div>
+                <div style="clear:both; height:30px"></div>
+                <div class="row">
+                    <div style="width: 33%;float: left;padding-left: 10px;">
+                        <canvas id="canvas4" height="230" width="150"></canvas>
+                    </div>
+                    <div style="width: 33%;float: left;padding-left: 10px;">
+                        <canvas id="canvas5" height="230" width="150"></canvas>
+                    </div>
+                    <div style="width: 33%;float: left;padding-left: 10px;">
+                        <canvas id="canvas6" height="103" width="150"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var randomScalingFactor = function () { return Math.round( Math.random() * 100 ) };
+
+
+        var data1 = {
+            labels: [
+			"Other Services",
+            "WASH",
+            "Nutrition",
+            "(PWDs)",
+            "Mine Action",
+            "Legal",
+            "General Protection",
+            "Basic services",
+			"NFI distribution",
+			"Cash Distribution",
+            "GBV",
+            "Health",
+            "Child Protection",
+            "Education"
+            ],
+            datasets: [{
+                label: "Services Mapped per Sector",
+                backgroundColor: "rgba(92,172,238,1)",
+                borderColor: "rgba(19,57,89,1)",
+                fontColor: 'white',
+                borderWidth: 2,
+                hoverBackgroundColor: "rgba(255,99,132,0.4)",
+                hoverBorderColor: "rgba(255,99,132,1)",
+                data: [3, 12, 22, 23, 24, 28, 51,54, 57,59, 67, 146, 147, 264],
+            }]
+        };
+        var data2 = {
+            labels: ["Dar'a","Quneitra","Rural Damascus"],
+            datasets: [{
+                label: "Services Mapped per Governorate",
+                backgroundColor: ["rgba(202,225,255,1)",
+                 "rgba(92,172,238,1)",
+                 "rgba(54, 100, 139,1)"
+                ],
+                borderColor: "rgba(19,57,89,1)",
+                fontColor: 'white',
+                borderWidth: 2,
+                hoverBackgroundColor: "rgba(255,99,132,0.4)",
+                hoverBorderColor: "rgba(255,99,132,1)",
+                data: [55, 21, 24],
+            }]
+        };
+
+        var data3 = {
+            labels: ["Yes", "No"],
+            datasets: [{
+                label: "ID required to access a service",
+                backgroundColor: "rgba(92,172,238,1)",
+                borderColor: "rgba(19,57,89,1)",
+                fontColor: 'white',
+                borderWidth: 2,
+                hoverBackgroundColor: "rgba(255,99,132,0.4)",
+                hoverBorderColor: "rgba(255,99,132,1)",
+                data: [62, 38],
+            }]
+        };
+
+        var data4 = {
+            labels: ["Walk-in", "Referrals", "Outreach"],
+            datasets: [{
+                label: "Intake Criteria",
+                backgroundColor: "rgba(92,172,238,1)",
+                borderColor: "rgba(19,57,89,1)",
+                borderWidth: 2,
+                hoverBackgroundColor: "rgba(255,99,132,0.4)",
+                hoverBorderColor: "rgba(255,99,132,1)",
+                data: [50, 28, 22],
+            }]
+        };
+
+        var data5 = {
+           
+            labels: ["Yes", "No"],
+            datasets: [{
+                label: "Accept Referrals",
+                backgroundColor: "rgba(92,172,238,1)",
+                borderColor: "rgba(19,57,89,1)",
+                borderWidth: 2,
+                fontColor: 'white',
+                hoverBackgroundColor: "rgba(255,99,132,0.4)",
+                hoverBorderColor: "rgba(255,99,132,1)",
+                data: [91, 9],
+            }, ]
+        };
+
+        var data6 = {
+            labels: ["Beneficiaries", "IRC programs", "Working Group"],
+            datasets: [{
+                label: "Yes",
+                fill: false,
+                lineTension: 0.1,
+                backgroundColor: "rgba(92,172,238,1)",
+                borderColor: "red", // The main line color
+                borderCapStyle: 'square',
+                borderDash: [], // try [5, 15] for instance
+                borderDashOffset: 0.0,
+                borderJoinStyle: 'miter',
+                pointBorderColor: "black",
+                pointBackgroundColor: "white",
+                pointBorderWidth: 1,
+                pointHoverRadius: 8,
+                pointHoverBackgroundColor: "yellow",
+                pointHoverBorderColor: "brown",
+                pointHoverBorderWidth: 2,
+                pointRadius: 4,
+                pointHitRadius: 10,
+                // notice the gap in the data and the spanGaps: true
+                data: [97, 99, 97],
+                spanGaps: true,
+            }, {
+                label: "No",
+                fill: true,
+                lineTension: 0.1,
+                backgroundColor: "rgba(190,190,253,1)",
+                borderColor: "rgb(167, 105, 0)",
+                borderCapStyle: 'butt',
+                borderDash: [],
+                borderDashOffset: 0.0,
+                borderJoinStyle: 'miter',
+                pointBorderColor: "white",
+                pointBackgroundColor: "black",
+                pointBorderWidth: 1,
+                pointHoverRadius: 8,
+                pointHoverBackgroundColor: "brown",
+                pointHoverBorderColor: "yellow",
+                pointHoverBorderWidth: 2,
+                pointRadius: 4,
+                pointHitRadius: 10,
+                // notice the gap in the data and the spanGaps: false
+                data: [3, 1, 3],
+                spanGaps: false,
+            }
+
+            ]
+        };
+
+        var options2 = { 
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Services Each Governorate',
+                        fontSize: 12
+                    },
+                    gridLines: {
+                        display: true,
+                        color: "rgba(0,0,0,0.2)"
+                    },
+                }],
+                xAxes: [{
+                    categoryPercentage: 0.5,
+                    gridLines: {
+                        display: true,
+                        color: "rgba(0,0,0,0.2)"
+                    },
+                    ticks: {
+                        fontSize: 10,
+                        autoSkip: false,
+
+                    }
+                }]
+            }
+        };
+
+        var optionsDonut = {
+            tooltips: {
+                mode: 'label',
+                callbacks: {
+                    label: function ( tooltipItem, data )
+                    {
+                        return data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] + '%';
+                    },
+                }
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Services Each Governorate',
+                        fontSize: 12
+                    },
+                    gridLines: {
+                        display: true,
+                        color: "rgba(0,0,0,0.2)"
+                    },
+                }],
+                xAxes: [{
+                    categoryPercentage: 0.5,
+                    gridLines: {
+                        display: true,
+                        color: "rgba(0,0,0,0.2)"
+                    },
+                    ticks: {
+                        fontSize: 10,
+                        autoSkip: false,
+
+                    }
+                }]
+            }
+        };
+
+        var options6 = {
+            tooltips: {
+                mode: 'label',
+                callbacks: {
+                    label: function ( tooltipItem, data )
+                    {
+                        return data.datasets[tooltipItem.datasetIndex].label + ":" + tooltipItem.yLabel + "%";
+                    },
+                }
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Consent to Share Information',
+                        fontSize: 12
+                    },
+                    gridLines: {
+                        display: true,
+                        color: "rgba(0,0,0,0.2)"
+                    },
+                }],
+                xAxes: [{
+                    categoryPercentage: 0.5,
+                    gridLines: {
+                        display: true,
+                        color: "rgba(0,0,0,0.2)"
+                    },
+                    ticks: {
+                        fontSize: 10,
+                        autoSkip: false,
+
+                    }
+                }]
+            }
+        };
+
+        var options = {
+
+            maintainAspectRatio: false,
+            tooltips: {
+                mode: 'label',
+                callbacks: {
+                    label: function ( tooltipItem, data )
+                    {
+                        return data.datasets[tooltipItem.datasetIndex].label + ":" + tooltipItem.yLabel + "%";
+                    },
+                }
+            },
+            scales: {
+                yAxes: [{
+
+                    gridLines: {
+                        display: true,
+                        color: "rgba(0,0,0,0.2)"
+                    },
+                    ticks: {
+                        beginAtZero: true
+                    },
+                }],
+                xAxes: [{
+                    categoryPercentage: 0.5,
+                    gridLines: {
+                        display: true,
+                        color: "rgba(0,0,0,0.2)"
+                    },
+                    ticks: {
+                        fontSize: 10,
+                        autoSkip: false,
+
+                    }
+                }]
+            }
+        };
+
+        var optionsHr = {
+
+            maintainAspectRatio: false,
+            tooltips: {
+                mode: 'label',
+                callbacks: {
+                    label: function ( tooltipItem, data )
+                    {
+                        return data.datasets[tooltipItem.datasetIndex].label + ":" + tooltipItem.xLabel ;
+                    },
+                }
+            },
+            scales: {
+                yAxes: [{
+
+                    gridLines: {
+                        display: true,
+                        color: "rgba(0,0,0,0.2)"
+                    },
+                    ticks: {
+                        beginAtZero: true
+                    },
+                }],
+                xAxes: [{
+                    categoryPercentage: 0.5,
+                    gridLines: {
+                        display: true,
+                        color: "rgba(0,0,0,0.2)"
+                    },
+                    ticks: {
+                        fontSize: 10,
+                        autoSkip: false,
+
+                    }
+                }]
+            }
+        };
+        Chart.defaults.global.defaultFontColor = '#FFF';
+
+        var ctx = document.getElementById( "canvas" );
+        var myChart = new Chart( ctx, {
+            type: 'horizontalBar',
+            options: optionsHr,
+            data: data1,
+        } );
+        var ctx2 = document.getElementById( "canvas2" );
+        var myChart2 = new Chart( ctx2, {
+            type: 'doughnut',
+            options: optionsDonut,
+            data: data2,
+        } );
+        var ctx3 = document.getElementById( "canvas3" );
+        var myChart3 = new Chart( ctx3, {
+            type: 'bar',
+            options: options,
+            data: data3,
+        } );
+        var ctx4 = document.getElementById( "canvas4" );
+        var myChart4 = new Chart( ctx4, {
+            type: 'bar',
+            options: options,
+            data: data4,
+        } );
+        var ctx5 = document.getElementById( "canvas5" );
+        var myChart5 = new Chart( ctx5, {
+            type: 'bar',
+            options: options,
+            data: data5,
+        } );
+        var ctx6 = document.getElementById( "canvas6" );
+        var myChart6 = new Chart( ctx6, {
+            type: 'bar',
+            options: options6,
+            data: data6,
+        } );
+    </script>
+</body>
+</html>

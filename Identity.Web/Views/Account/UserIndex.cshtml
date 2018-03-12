@@ -1,0 +1,268 @@
+﻿
+@{
+    ViewBag.Title = "UserIndex";
+
+}
+<head>
+
+    <link href="~/Content/jquery/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/ui.jqgrid.css" rel="stylesheet" />
+    <link href="~/Content/jquery.multiselect.css" rel="stylesheet" />
+    <link href="~/Content/jquery.multiselect.filter.css" rel="stylesheet" />
+    <style>
+        .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+            background: rgba(0,0,0,0.1) !important;
+        }
+
+        .fm-button {
+            height: 25px;
+        }
+
+        input.add-rule.ui-add.ui-state-default.ui-corner-all {
+            width: 25px;
+        }
+
+        .fm-button {
+            height: auto !important;
+        }
+
+        .ui-jqdialog .ui-jqdialog-titlebar {
+            height: auto !important;
+        }
+
+        .box-body {
+            padding: 10px;
+        }
+
+        .ui-menu-item {
+            font-size: 11px;
+        }
+
+        .ui-autocomplete {
+            z-index: 2000;
+            font-size: 11px;
+        }
+
+        .ui-widget {
+            font-family: Verdana,Arial,sans-serif;
+            font-size: 12px;
+        }
+
+        .ui-multiselect-header ul {
+            font-size: 8px;
+        }
+
+        .ui-widget-header input[type=search] {
+            color: black;
+        }
+
+        .ui-pg-input {
+            color: black;
+        }
+
+        div#editmodjqGrid {
+            width: 600px !important;
+        }
+
+            div#editmodjqGrid input {
+                background: gray !important;
+                color: white !important;
+            }
+
+        th {
+            font-size: 11px !important;
+        }
+
+        td {
+            font-size: 10px !important;
+        }
+    </style>
+</head>
+<div class="col-md-10">
+    <div style="height:100px; width:100%; clear:both;"></div>
+    <div class="block block-drop-shadow">
+        <div class="box-body">
+            <button type="button" class="btn btn-primary from-control" onclick="ShowAddUserModal();">Add User</button>
+
+        </div>
+    </div>
+    <div style="height:20px; width:100%; clear:both;"></div>
+    <div class="block block-drop-shadow">
+
+        <div id="griddiv" class="box-body">
+            <table id="jqGrid"></table>
+            <div id="jqGridPager"></div>
+        </div>
+    </div>
+    <div id="AddNewUser"></div>
+</div>
+
+
+@section scripts
+    {
+    <script src="~/Scripts/jquery-ui.min.js"></script>
+    <script src="~/Content/jqGrid/js/jquery.multiselect.js"></script>
+
+    <script src="~/Content/jqGrid/js/jquery.multiselect.filter.js"></script>
+    <script src="~/Scripts/bootstrap-dialog.min.js"></script>
+    <script src="~/Content/jqGrid/jquery.jqGrid.js"></script>
+    <script src="~/Content/jqGrid/i18n/grid.locale-en.js"></script>
+    <script src="~/Content/jqGrid/jszip.js"></script>
+   
+
+    <script>
+        var UserTable;
+
+        $().ready( function ()
+        {
+            Search();
+         
+        } );
+        function SubmitForm()
+        {
+            $.post( '/Account/CreateNewUser', $( '#CreateNewUserFrm' ).serializeArray(), function ( data )
+            {
+                CustomAlert( 'User Added Successfully', 'User Added Successfully', BootstrapDialog.TYPE_DANGER, function ()
+                {
+                    $( "#jqGrid" ).trigger( "reloadGrid" );
+                    $( '#myModal' ).modal( 'toggle' );
+                } );
+            } )
+        }
+        function ResetPassword( UserEmail )
+        {
+            debugger;
+            var defaultPassword = unescape( "@@123456" );
+
+            $.post( '/Account/ResetPassword', { Code: '', Email: UserEmail, Password: defaultPassword, ConfirmPassword: defaultPassword }, function ( data )
+            {
+                if ( data.length < 1 )
+                {
+                    CustomAlert( "Password Reset Succefully", 'Password Reset Succefully', BootstrapDialog.TYPE_SUCCESS, function ()
+                    {
+                        //  $( "#jqGrid" ).trigger( "reloadGrid" );
+                    } );
+                }
+                else
+                {
+                    CustomAlert( data[1], 'Error On Passwor Reset', BootstrapDialog.TYPE_DANGER, function ()
+                    {
+                        //  $( "#jqGrid" ).trigger( "reloadGrid" );
+                    } );
+                }
+
+            } )
+        }
+        function Search()
+        {
+            $Grid = $( "#jqGrid" ).jqGrid( {
+                url: '/account/GetUsers/',
+                datatype: 'json',
+                mytype: 'get',
+                colNames: [
+                   "Id",
+                    "UserName",
+                    "RoleName",
+                    ""
+                ],
+                colModel: [
+                 { name: "Id", hidden: true, key: true },
+                 { name: "UserName", width: 500 },
+                 { name: "RoleName", width: 400 },
+                  {
+                      name: 'act', index: 'act', width: 129, align: 'center', sortable: false, formatter: AddCustomEvents,
+                      formatoptions: {
+                          keys: true, // we want use [Enter] key to save the row and [Esc] to cancel editing.
+                          //delOptions: myDelOptions
+                      }
+
+                  }
+                ],
+
+                height: 'auto',
+                viewrecords: true,
+                pager: $( "#jqGridpager" ),
+                rowList: [10, 20, 50],
+                rowNum: 10,
+                autowidth: true,
+                shrinkToFit: false,
+                forceFit: true,
+                gridview: true,
+                rownumbers: true,
+                ignoreCase: true,
+                viewrecords: true,
+                sortorder: "desc",
+            } );
+        }
+
+        function AddCustomEvents( cellvalue, options, row )
+        {
+
+            var editString = "Edit";
+            var viewString = "View";
+            var deleteString = "Delete";
+            var cell = "";
+            cell = " <div style='float:left;cursor:pointer;' onclick=ChangeAction('" + editString + "','" + options.rowId + "');><div class='ui-pg-div ui-inline-edit'><span class='ui-icon ui-icon-document'></span></div></div>";
+            cell += " <div style='float:left;cursor:pointer;' onclick=ChangeAction('" + deleteString + "','" + options.rowId + "');><div class='ui-pg-div ui-inline-edit'><span class='ui-icon ui-icon-trash toHide'></span></div></div>";
+
+            return cell;
+        }
+        function ChangeAction( action, rowId )
+        {
+            switch ( action )
+            {
+                case "Edit":
+                    $.get( "@Url.Action("ViewUser")" + "?UserId=" + rowId, function ( data )
+                    {
+                        $( '#AddNewUser' ).html( data );
+                        $( '#myModal' ).modal( { show: true } );
+                    } );
+                    break;
+                case "Delete":
+                    $.post( "@Url.Action("DeleteUser")", { Userid: rowId }, function ( data )
+                    {
+                        if ( data == "true" )
+                        {
+                            CustomAlert( 'User Has been Deleted Successfuly ', 'DeleteConfirmation', BootstrapDialog.TYPE_DANGER, function ()
+                            {
+                                $( "#jqGrid" ).trigger( "reloadGrid" );
+                                $( '#myModal' ).modal( 'toggle' );
+                            } );
+                        }
+                        else
+                        {
+                            CustomAlert( 'You Can not Delete The Current User ', 'DeleteError', BootstrapDialog.TYPE_DANGER, function ()
+                            {
+                                //  $( "#jqGrid" ).trigger( "reloadGrid" );
+                            } );
+
+                        }
+
+                    } );
+                    break;
+            }
+        }
+        function ShowAddUserModal()
+        {
+            $.get( "@Url.Action("CreateNewUser")", function ( data )
+            {
+                debugger;
+                if ( data.indexOf( "Error" ) == -1 )
+                {
+                    $( '#AddNewUser' ).html( data );
+                    $( '#myModal' ).modal( { show: true } );
+                }
+                else
+                {
+                    CustomAlert( data, 'DeleteError', BootstrapDialog.TYPE_DANGER, function ()
+                    {
+                        $( "#jqGrid" ).trigger( "reloadGrid" );
+                        $( '#myModal' ).modal( { show: false } );
+                    } );
+                }
+            } );
+        }
+
+    </script>
+
+}

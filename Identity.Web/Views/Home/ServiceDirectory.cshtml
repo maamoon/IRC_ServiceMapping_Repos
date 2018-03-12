@@ -1,0 +1,698 @@
+﻿@using Identity.Core
+@using Identity.Web.Controllers
+@{
+    ViewBag.Title = "ServiceDirectory";
+
+}
+<head>
+
+    <link href="~/Content/jquery/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/ui.jqgrid.css" rel="stylesheet" />
+    <link href="~/Content/jquery.multiselect.css" rel="stylesheet" />
+    <link href="~/Content/jquery.multiselect.filter.css" rel="stylesheet" />
+    <style>
+        .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+            background: rgba(0,0,0,0.1) !important;
+        }
+
+        .fm-button {
+            height: 25px;
+        }
+
+        input.add-rule.ui-add.ui-state-default.ui-corner-all {
+            width: 25px;
+        }
+
+        .fm-button {
+            height: auto !important;
+        }
+
+        .ui-jqdialog .ui-jqdialog-titlebar {
+            height: auto !important;
+        }
+
+        .box-body {
+            padding: 10px;
+        }
+
+        .ui-menu-item {
+            font-size: 11px;
+        }
+
+        .ui-autocomplete {
+            z-index: 2000;
+            font-size: 11px;
+        }
+
+        .ui-widget {
+            font-family: Verdana,Arial,sans-serif;
+            font-size: 12px;
+        }
+
+        .ui-multiselect-header ul {
+            font-size: 8px;
+        }
+
+        .ui-widget-header input[type=search] {
+            color: black;
+        }
+
+        .ui-pg-input {
+            color: black;
+        }
+
+        div#editmodjqGrid {
+            width: 600px !important;
+             background: gray !important;
+        }
+
+            div#editmodjqGrid input {
+                background: gray !important;
+                color: white !important;
+            }
+
+        .ui-multiselect-checkboxes label input {
+            position: relative;
+            top: 1px;
+            display: inline;
+            width: 25px;
+        }
+
+        a#sData {
+            display: none !important;
+        }
+
+        a#nData {
+            display: none !important;
+        }
+
+        a#pData {
+            display: none !important;
+        }
+
+        th {
+            font-size: 11px !important;
+        }
+
+        td {
+            font-size: 10px !important;
+        }
+    </style>
+</head>
+<div class="col-md-10">
+    <div class="box">
+
+        <div class="box-body" id="maindiv">
+            <fieldset>
+
+
+                <div class="row" style="padding: 10px !important;">
+                    <div class="col-md-6">
+                        <label class="control-label required" for="Sector" style="width:135px">Sector</label>
+                        <div class="">
+
+                            <select id="Sector" class="multiselect-ui form-control selectOption" multiple="multiple"
+                                    style="width:100%;max-width:90%;height:25px">
+                                @if (ViewBag.Sector != null)
+                                {
+                                    foreach (var item in ViewBag.Sector as List<BaseController.FilterData>)
+                                    {
+                                        <option value="@item.Key"> @item.Value</option>
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="control-label required" for="SubSector" style="width:135px">SubSector</label>
+                        <div class="">
+
+                            <select id="SubSector" class="multiselect-ui form-control selectOption" multiple="multiple"
+                                    style="width:100%;max-width:90%;height:25px">
+                                @*@if (ViewBag.SubSector != null)
+                                    {
+                                        foreach (var item in ViewBag.SubSector as List<FilterData>)
+                                        {
+                                            <option value="@item.Key"> @item.Value</option>
+                                        }
+                                    }*@
+                            </select>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row" style="padding: 10px !important;">
+                    <div class="col-md-3">
+                        <label class="control-label required" for="Governorate" style="width:135px">Governorate</label>
+                        <div class="">
+
+                            <select id="Governorate" name="Governorate" class="form-control selectOption" multiple="multiple"
+                                    style="width:100%;max-width:90%;height:25px">
+                                @if (ViewBag.Governorate != null)
+                                {
+                                    foreach (var item in ViewBag.Governorate as List<LookUp_Governorate>)
+                                    {
+                                        <option value="@item.ID"> @item.GovernorateName</option>
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="control-label required" for="District" style="width:135px">District</label>
+                        <div class="">
+
+                            <select id="District" class="form-control  selectOption" multiple="multiple"
+                                    style="width:100%;max-width:90%;height:25px"></select>
+
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="control-label required" for="SubDistrict" style="width:135px">SubDistrict</label>
+                        <div class="">
+
+                            <select id="SubDistrict" class="form-control selectOption" multiple="multiple"
+                                    style="width:100%;max-width:90%;height:25px"></select>
+
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="control-label required" for="Village" style="width:135px">Village</label>
+                        <div class="">
+
+                            <select id="Village" name="Village" class="form-control selectOption" multiple="multiple"
+                                    style="width:100%;max-width:90%;height:25px"></select>
+
+                        </div>
+                    </div>
+                </div>
+
+            </fieldset>
+        </div>
+        @if (!Context.User.IsInRole("Viewer"))
+        {
+            <div class="col-xs-3">
+                <button type="button" class="btn btn-success fa fa-file-excel-o" style="height:30px" onclick="ExportToExcel();">
+                    <span>Export</span>
+                </button>
+            </div>
+        }
+    </div>
+    <div class="block block-drop-shadow">
+
+        <div id="griddiv" class="box-body">
+            <table id="jqGrid"></table>
+            <div id="jqGridPager"></div>
+        </div>
+    </div>
+</div>
+@section scripts
+    {
+    <script src="~/Scripts/jquery-ui.min.js"></script>
+    <script src="~/Content/jqGrid/js/jquery.multiselect.js"></script>
+
+    <script src="~/Content/jqGrid/js/jquery.multiselect.filter.js"></script>
+
+    <script src="~/Scripts/bootstrap-dialog.min.js"></script>
+    <script src="~/Content/jqGrid/jquery.jqGrid.js"></script>
+    <script src="~/Content/jqGrid/i18n/grid.locale-en.js"></script>
+    <script src="~/Content/jqGrid/jszip.js"></script>
+    @*<script src="~/Content/jqGrid/grid.formedit.js"></script>*@
+    <script>
+        function FillFilters()
+        {
+            $.get( "GetLookUpData", "Home", function ( data )
+            {
+
+                sessionStorage.setItem( 'GovernorateArray', JSON.stringify( data.data.Governorate ) );
+                sessionStorage.setItem( 'DistrictArray', JSON.stringify( data.data.District ) );
+                sessionStorage.setItem( 'SubDistrictArray', JSON.stringify( data.data.SubDistrict ) );
+                sessionStorage.setItem( 'VillageArray', JSON.stringify( data.data.Village ) );
+                sessionStorage.setItem( 'SectorArray', JSON.stringify( data.data.Sector ) );
+                sessionStorage.setItem( 'SubSectorArray', JSON.stringify( data.data.SubSector ) );
+
+
+            } )
+
+        }
+
+        function FillSubList( listName, data )
+        {
+
+            $( '#' + listName ).children( 'optgroup' ).remove();
+            $( '#' + listName ).children( 'option' ).remove();
+
+            if ( data != "" )
+            {
+                var DistinctGroup = [];
+                //var Gruops = data.data.filter( function ( el ) { return ( DistinctGroup.indexOf( el.GroupName ) < 0 ); } )
+                // data.data.filter( function ( el ) { return ( el.GroupName!="" )});
+                $.each( data, function ( index, value )
+                {
+                    if ( DistinctGroup.indexOf( value.GroupName ) == -1 )
+                    {
+                        DistinctGroup.push( value.GroupName );
+                    }
+                } )
+                $.each( DistinctGroup, function ( index, value )
+                {
+                    var Options = data.filter( function ( el ) { return ( el.GroupName === value ) } );
+                    var optgroup = $( '<optgroup>' );
+                    optgroup.attr( 'label', value );
+                    $.each( Options, function ( index, value )
+                    {
+                        var option = $( "<option></option>" );
+                        option.val( value.ID );
+                        option.text( value.Name );
+
+                        optgroup.append( option );
+
+                        $( '#' + listName ).append( optgroup );
+
+                    } )
+                } )
+
+            }
+            $( '#' + listName ).multiselect( 'refresh' );
+
+
+        }
+
+        $( document ).ready( function ()
+        {
+            FillFilters();
+            Search();
+
+            $( ".selectOption" ).multiselect().multiselectfilter();
+            $( "#Sector" ).multiselect(
+          {
+              close: function ()
+              {
+                  var SelectedGroup = $( "#Sector" ).val();
+                  var FullArr = JSON.parse( sessionStorage.getItem( 'SubSectorArray' ) );
+                  var FilteredGroup = [];
+                  FullArr.filter( function ( el )
+                  {
+                      if ( $.inArray( el.ParentKey.toString(), SelectedGroup ) != -1 )
+                          FilteredGroup.push( { GroupName: el.ParentValue, ID: el.Key, Name: el.Value } );
+                      return FilteredGroup;
+                  } );
+                  FillSubList( 'SubSector', FilteredGroup );
+                  ApplyFilter();
+              },
+          } ).multiselectfilter();
+            $( "#Governorate" ).multiselect(
+            {
+                close: function ()
+                {
+                    var SelectedGroup = $( "#Governorate" ).val();
+                    var FullArr = JSON.parse( sessionStorage.getItem( 'DistrictArray' ) );
+                    var FilteredGroup = [];
+                    FullArr.filter( function ( el )
+                    {
+                        if ( $.inArray( el.GovernorateID.toString(), SelectedGroup ) != -1 )
+                            FilteredGroup.push( { GroupName: el.GovernorateCode, ID: el.ID, Name: el.DistrictName } );
+                        return FilteredGroup;
+                    } );
+                    FillSubList( 'District', FilteredGroup );
+                    ApplyFilter();
+                },
+            } ).multiselectfilter();
+            $( "#District" ).multiselect(
+               {
+
+                   close: function ()
+                   {
+                       var SelectedGroup = $( "#District" ).val();
+                       var FullArr = JSON.parse( sessionStorage.getItem( 'SubDistrictArray' ) );
+                       var FilteredGroup = [];
+                       FullArr.filter( function ( el )
+                       {
+                           if ( $.inArray( el.DistrictID.toString(), SelectedGroup ) != -1 )
+                               FilteredGroup.push( { GroupName: el.DistrictCode, ID: el.ID, Name: el.SubdistrictName } );
+                           return FilteredGroup;
+                       } );
+                       FillSubList( 'SubDistrict', FilteredGroup );
+                       ApplyFilter();
+                   },
+               } ).multiselectfilter();
+            $( "#SubDistrict" ).multiselect(
+              {
+
+                  close: function ()
+                  {
+                      var SelectedGroup = $( "#SubDistrict" ).val();
+                      var FullArr = JSON.parse( sessionStorage.getItem( 'VillageArray' ) );
+                      var FilteredGroup = [];
+                      FullArr.filter( function ( el )
+                      {
+                          if ( $.inArray( el.SubDistrictID.toString(), SelectedGroup ) != -1 )
+                              FilteredGroup.push( { GroupName: el.SubdistrictCode, ID: el.ID, Name: el.VillageName } );
+                          return FilteredGroup;
+                      } );
+                      FillSubList( 'Village', FilteredGroup );
+                      ApplyFilter();
+                  },
+              } ).multiselectfilter();
+            //$( ".ui-search-toolbar" ).hide();
+        } )
+
+        function Search()
+        {
+            $.jgrid.gridUnload( "jqGrid" );
+
+            $( "#jqGrid" ).setGridParam( { data: '[]' } ).trigger( "reloadGrid" );
+
+            var grid = $( "#jqGrid" );
+            $Grid = $( "#jqGrid" ).jqGrid( {
+                //datatype: GridData,
+                url: '/Home/ServiceDirectoryGird/',
+                datatype: 'json',
+                mytype: 'get',
+                rownumbers: true,
+                colNames: [
+                     "Index",
+                     "Service Provider Name",
+                     "اسم مقدم الخدمة",
+                     "Services Provider Type",
+                     "Sector",
+                     "SubSector",
+                     "Services",
+                     "الخدمات",
+                     "Governorate PCode",
+                     "Governorate",
+                     "District PCode",
+                     "District",
+                     "SubDistrict PCode",
+                     "SubDistrict",
+                     "Village PCode",
+                     "Village",
+                     "Governorate Coverage",
+                     "مناطق التغطية",
+                     "Contact Person",
+                     "Contact Person Amman ",
+                     "Phone Number",
+                     "Email",
+                     "Skype",
+                     "Location Type",
+                     "Opening Hours",
+                     "Closing Hour",
+                     "Hotline",
+                     "Require Fees",
+                     "Require Waiting Period",
+                     "Waiting Period How Long",
+                     "Target Group",
+                     "Require ID",
+                     "ID Types Accepted",
+                     "Intake Criteria",
+                     "Accept Referrals",
+                     "Referral Focal Point",
+                     "Referral Name",
+                     "Referral Number",
+                     "Referral Email",
+                     "Require Conditions for Referral",
+                     "Referral Conditions",
+                     "Referral Follow_Up",
+                     "Center Disability Friendly",
+                     "Center Disability Friendly How",
+                     "Risk Accessing Center",
+                     "Risk Accessing Center Reasons",
+                     "Road Leading to Service Safe",
+
+
+                ],
+                /*Service provider name- english                                 governorate
+Sector                                                                                   sub-district
+sub-sector                                                                          Center Disability Friendly
+oppening and closing hours
+intake crateria
+accept referras
+*/
+                colModel: [
+                    { name: "Index", search: true, hidden: true },
+                    {
+                        name: "ServiceProviderName_English", width: 200, search: true, hidden: false, editable: true,
+                        formoptions: {
+                            colpos: 1, // the position of the column
+                            rowpos: 1, // the position of the row
+                            //label: "Enter Company Name:", // the label to show for each input control
+                            //elmsuffix: "(required)" // the suffix to show after that
+                        }
+                    },
+                    { name: "ServiceProviderName_Arabic", width: 200, search: true, hidden: false },
+                    { name: "ServicesProviderType", search: true, hidden: false },
+					 
+                    {
+                        name: "Sector",width: 170 , search: true, hidden: false, editable: true,
+                        formoptions: {
+                            colpos: 1, // the position of the column
+                            rowpos: 2, // the position of the row
+                            //label: "Enter Company Name:", // the label to show for each input control
+                            //elmsuffix: "(required)" // the suffix to show after that
+                        }
+                    },
+                    {
+                        name: "SubSector", width: 250 ,search: true, hidden: false, editable: true,
+                        formoptions: {
+                            colpos: 2, // the position of the column
+                            rowpos: 2, // the position of the row
+                            //label: "Enter Company Name:", // the label to show for each input control
+                            //elmsuffix: "(required)" // the suffix to show after that
+                        }
+                    },
+                    { name: "ServicesEnglish",width: 250, search: true, hidden: false },
+                    { name: "ServicesInArabic", width: 250 ,search: true, hidden: false },
+                    { name: "GovernoratePCode", search: true, hidden: false },
+                    {
+                        name: "Governorate", search: true, hidden: false, editable: true,
+                        formoptions: {
+                            colpos: 1, // the position of the column
+                            rowpos: 3, // the position of the row
+                            //label: "Enter Company Name:", // the label to show for each input control
+                            //elmsuffix: "(required)" // the suffix to show after that
+                        }
+                    },
+                    { name: "DistrictPCode", search: true, hidden: false },
+                    { name: "District", search: true, hidden: false },
+                    { name: "SubDistrictPCode", search: true, hidden: false },
+                    {
+                        name: "SubDistrict", search: true, hidden: false, editable: true,
+                        formoptions: {
+                            colpos: 2, // the position of the column
+                            rowpos: 3, // the position of the row
+                            //label: "Enter Company Name:", // the label to show for each input control
+                            //elmsuffix: "(required)" // the suffix to show after that
+                        }
+                    },
+                    { name: "VillagePCode", search: true, hidden: false },
+                    { name: "Village", search: true, hidden: false },
+                    { name: "GovernorateCoverage", search: true, hidden: false },
+                    { name: "Coverage_Arabic", search: true, hidden: false },
+                    { name: "NameContact_Amman", search: true, hidden: false },
+                    { name: "NameContact", search: true, hidden: false },
+                    { name: "PhoneNumber", search: true, hidden: false },
+                    { name: "Email", search: true, hidden: false },
+                    { name: "Skype", search: true, hidden: false },
+                    { name: "LocationType", search: true, hidden: false },
+                    {
+                        name: "OpeningHours", search: true, hidden: false, editable: true,
+                        formoptions: {
+                            colpos: 1, // the position of the column
+                            rowpos: 4, // the position of the row
+                            //label: "Enter Company Name:", // the label to show for each input control
+                            //elmsuffix: "(required)" // the suffix to show after that
+                        }
+                    },
+                    {
+                        name: "ClosingHour", search: true, hidden: false, editable: true,
+                        formoptions: {
+                            colpos: 2, // the position of the column
+                            rowpos: 4, // the position of the row
+                            //label: "Enter Company Name:", // the label to show for each input control
+                            //elmsuffix: "(required)" // the suffix to show after that
+                        }
+                    },
+                    { name: "Hotline", search: true, hidden: false },
+                    { name: "RequireFees", search: true, hidden: false },
+                    { name: "RequireWaitingPeriod", search: true, hidden: false },
+                    { name: "WaitingPeriodHowLong", width: 200, search: true, hidden: false },
+                    { name: "TargetGroup", search: true, hidden: false },
+                    { name: "RequireID", search: true, hidden: false },
+                    { name: "IDTypesAccepted", search: true, hidden: false },
+                    { name: "IntakeCriteria", search: true, hidden: false },
+                    {
+                        name: "AcceptReferrals", search: true, hidden: false, editable: true,
+                        formoptions: {
+                            colpos: 1, // the position of the column
+                            rowpos: 5, // the position of the row
+                            //label: "Enter Company Name:", // the label to show for each input control
+                            //elmsuffix: "(required)" // the suffix to show after that
+                        }
+                    },
+                    { name: "ReferralContact", search: true, hidden: false },
+                    { name: "ReferralName", search: true, hidden: false },
+                    { name: "ReferralNumber", search: true, hidden: false },
+                    { name: "ReferralEmail", search: true, hidden: false },
+                    { name: "ReferralConditions", width: 200, search: true, hidden: false },
+                    { name: "ReferralConditionsYes", search: true, hidden: false },
+                    { name: "ReferralFollow_Up", search: true, hidden: false },
+                    {
+                        name: "CenterDisabilityFriendly", width: 200, search: true, hidden: false, editable: true,
+                        formoptions: {
+                            colpos: 2, // the position of the column
+                            rowpos: 5, // the position of the row
+                            //label: "Enter Company Name:", // the label to show for each input control
+                            //elmsuffix: "(required)" // the suffix to show after that
+                        }
+                    },
+                    { name: "CenterDisabilityFriendlyHow", width: 200, search: true, hidden: false },
+                    { name: "RiskAccessingCenter", search: true, hidden: false },
+                    { name: "RiskAccessingCenteryes_Reason", width: 200, search: true, hidden: false },
+                    { name: "RoadSafe", width: 200, search: true, hidden: false },
+
+
+                ],
+                onSelectRow: function ( rowid )
+                {
+                    $( this ).jqGrid( "editGridRow", rowid, {
+                        addCaption: "Card Data",
+                        afterShowForm: function ( $form )
+                        {
+                            debugger;
+                            var $captionTds = $( "#TblGrid_jqGrid tr>td.CaptionTD" ),
+                                $dataTds = $( "#TblGrid_jqGrid tr>td.DataTD" );
+
+                            $dataTds.first().attr( "colspan", 10 );
+
+                        },
+                        editCaption: "Card Data",
+                        bCancel: "Exit",
+                        bClose: "Close",
+
+                    } );
+                    $( 'div#editmodjqGrid input' ).attr( 'disabled', 'disabled' );
+                },
+
+
+                height: 460,
+                autowidth: true,
+                gridview: true,
+                sortorder: 'desc',
+                loadonce: true,
+                viewrecords: true,
+                pager: $( "#jqGridPager" ),
+                rowList: [100, 250, 500],
+                rowNum: 100,
+                autowidth: true,
+                shrinkToFit: false,
+                forceFit: true,
+                altRows: true,
+                sortname: "ID",
+
+                //toppager: true,
+
+            } )
+           .jqGrid( 'filterToolbar', { stringResult: true, searchOnEnter: false, defaultSearch: "cn" } )
+            $( '#jqGrid' ).navGrid( "#jqGridPager", {
+                search: false, // show search button on the toolbar
+                add: false,
+                edit: false,
+                del: false,
+                beforeShowForm: function ( $form )
+                {
+                    debugger;
+                    var $captionTds = $( "#trv_d>td.CaptionTD" ),
+                        $dataTds = $( "#trv_d>td.DataTD" );
+                    $captionTds.filter( ":gt(1)" ).hide();
+                    $dataTds.filter( ":gt(1)" ).hide();
+                    $dataTds.first().attr( "colspan", 5 );
+
+                },
+                refresh: true
+            },
+     {}, // edit options
+     {}, // add options
+     {}, // delete options
+     {}
+         //).navButtonAdd( '#jqGridPager', {
+         //    id: "excelexport_jqGrid",
+         //    caption: "Excel",
+         //    title: "Export To Excel",
+         //    buttonicon: " ui-icon-disk",
+         //    onClickButton: function ()
+         //    {
+         //        ExportToExcel();
+         //    },
+         //    position: "first"
+         //} ) ;
+           );
+        }
+
+        function ExportToExcel()
+        {
+            $( "#jqGrid" ).jqGrid( "exportToExcel", {
+                includeLabels: true,
+                includeGroupHeader: true,
+                includeFooter: true,
+                fileName: "ServiceMapping.xlsx",
+                maxlength: 40 // maxlength for visible string data
+            } )
+        }
+
+        $( '.selectOption' ).change( function ()
+        {
+            debugger;
+            ApplyFilter();
+        } );
+        function ApplyFilter()
+        {
+            g = $( '#jqGrid' );
+
+
+            var postdata = g.jqGrid( 'getGridParam', 'postData' );
+            var controlName = '';
+
+            var Filters = {};
+            Filters.groupOp = 'AND';
+            var groups = [];
+            $.each( $( '.selectOption' ), function ( index, selitem )
+            {
+                if ( $( selitem ).val() != null )
+                    if ( $( selitem ).val().length > 0 )
+                    {
+                        var group = {};
+                        var rules = [];
+                        controlName = selitem.id;
+                        $.each( $( '#' + selitem.id + ' option:selected' ), function ( index, item )
+                        {
+                            debugger;
+                            var filterConidtion = new Object();
+                            filterConidtion.field = controlName;
+                            filterConidtion.op = "eq";
+                            filterConidtion.data = $( item ).text().trim();
+                            rules.push( filterConidtion );
+                        } )
+                        group.groupOp = 'OR';
+                        group.rules = rules;
+                        groups.push( group );
+
+                    }
+            } )
+            Filters.groups = groups;
+            jQuery.extend( postdata, {
+                filters: Filters
+            } );
+            g.jqGrid( 'setGridParam', {
+                search: true,
+                postData: postdata
+            } );
+
+            g.trigger( "reloadGrid" );
+
+        }
+    </script>
+}

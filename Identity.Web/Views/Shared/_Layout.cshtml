@@ -1,0 +1,201 @@
+﻿
+@{
+    string CurrentUserPicture = "";
+
+    if (Session["CurrentUserPicture"] != null)
+    {
+        CurrentUserPicture = Session["CurrentUserPicture"].ToString();
+    }
+
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link href="~/Content/stylesheets.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div class="row" style="margin-right: 0px;margin-left: 0px;">
+        <div class="col-md-12">
+            <nav class="navbar brb">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+
+                        <span class="icon-reorder"></span>
+                    </button>
+                    <a class="navbar-brand" href="@Url.Action("Index","Home")"><img src="/img/IRC-Logo1.png" style="width:36px;height:36px" /></a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <form action="@Url.Action("LogOff", "Account")" method="post" id="LogoutFrm">
+                        @Html.AntiForgeryToken()
+                        <ul class="nav navbar-nav">
+                            <li class="active">
+                                <a href="@Url.Action("Index","Home")">
+                                    <span class="icon-home"></span> Home
+                                </a>
+                            </li>
+                            <li><a href="@Url.Action("ServiceDirectory","Home")"<span class="icon-table"></span> Services Directory</a></li>
+                            <li><a href="@Url.Action("About","Home")"><span class="icon-info-sign"></span>About IRC Service Mapping</a></li>
+                            <li><a href="@Url.Action("AddUpdate","Home")"><span class="icon-edit"></span> Add/Update a Service</a></li>
+                            <li><a href="javascript:;" onclick="ShowChangePasswordModal();"><span class="icon-user"></span>Change Password</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav" style="float:right">
+                            <li style="float:right"><a href="javascript:;" onclick="$( '#LogoutFrm' ).submit();"><span class="icon-off"></span> logout</a></li>
+
+                            <li style="float:right"><a href="mailto:Husni.Abumelhim@rescue.org?Subject=FeedBack&cc=ibrahim.al-malkawi@rescue.org;"><span class="icon-comment"></span> Feedback</a></li>
+                        </ul>
+                    </form>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+
+    <div class="col-md-2">
+        <div class="block block-drop-shadow">
+            <div class="user bg-default bg-light-rtl">
+                <div class="info">
+                    <img id="ProfilePicture" src=@(string.IsNullOrEmpty(CurrentUserPicture)?"/img/user.jpg": CurrentUserPicture) class="img-circle img-thumbnail" />
+                </div>
+            </div>
+            <div class="content list-group list-group-icons">
+
+                <a href="@Url.Action("ServiceDirectory","Home")" class="list-group-item"><span class="icon-table"></span>Services Directory<i class="icon-angle-right pull-right"></i></a>
+
+                <a href="@Url.Action("About","Home")" class="list-group-item"><span class="icon-info-sign"></span>About IRC Service Mapping<i class="icon-angle-right pull-right"></i></a>
+                <a href="@Url.Action("Dashboard","Home")" class="list-group-item"><span class="icon-bar-chart"></span>Dashboard<i class="icon-angle-right pull-right"></i></a>
+
+                <a href="@Url.Action("Coverage","Home")" class="list-group-item"><span class="icon-map-marker"></span>Coverage<i class="icon-angle-right pull-right"></i></a>
+                <a href="@Url.Action("DataSharingProtocol","Home")" class="list-group-item"><span class="icon-file-text"></span>Data Sharing Protocol<i class="icon-angle-right pull-right"></i></a>
+                <a href="@Url.Action("AddUpdate","Home")" class="list-group-item"><span class="icon-edit"></span>Add/Update a Service<i class="icon-angle-right pull-right"></i></a>
+                <a href="mailto:Husni.Abumelhim@rescue.org?Subject=FeedBack&cc=ibrahim.al-malkawi@rescue.org" class="list-group-item"><span class="icon-comment"></span>Feedback<i class="icon-angle-right pull-right"></i></a>
+                @if (Context.User.IsInRole("Administrator"))
+                { <a href="@Url.Action("UserIndex", "Account")" class="list-group-item"><span class="icon-cogs"></span>Manage User<i class="icon-angle-right pull-right"></i></a>
+
+                    using (Html.BeginForm("ChangePicturePost", "Manage", FormMethod.Post, new { id = "changePicForm", enctype = "multipart/form-data" }))
+                    {
+                        @*<div>
+                                @Html.TextBox("file", "", new { type = "file" }) <br />
+                                <input type="submit" value="Upload" />
+                            </div>*@
+                        <label for="DocFile" class="list-group-item" style="cursor: pointer;">
+                            <span class="icon-picture"></span>Change Picture<i class="icon-angle-right pull-right"></i>
+                        </label>
+                        <input id="DocFile" name="DocFile" onchange="$( '#changePicForm' ).submit();" type="file" style="display:none" />
+
+
+                    }
+                    @*<label for="DocFile" class="list-group-item" style="cursor: pointer;">
+                            <span class="icon-picture"></span>Change Picture<i class="icon-angle-right pull-right"></i>
+                        </label>
+                        <input id="DocFile" name="DocFile" onchange="UploadAndDisplayImage( this, event,'ProfilePicture-' +'@Context.User.Identity.Name'  , 'DocPreview', 'DocPath' );" type="file" style="display:none" />*@
+
+
+                }
+                <form action="@Url.Action("LogOff", "Account")" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="list-group-item" style="width: 100%;text-align: left;"><span class="icon-off"></span>Logout<i class="icon-angle-right pull-right"></i></button>
+                </form>
+                @* <a href="@Url.Action("LogOff","Account")" class="list-group-item"><span class="icon-off"></span>Logout<i class="icon-angle-right pull-right"></i></a>*@
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+
+    </div>
+    <div class="row" style="margin-right: 0px;margin-left: 0px;">
+        <div class="page-footer">
+            <div class="page-footer-wrap">
+                <div class="side" style="text-align:center">
+                    Copyirght &COPY; ElmahSoft 2017. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    <div id="changePassword"></div>
+    <div id="changePicture"></div>
+</body>
+
+</html>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/bootstrap-dialog.min.js"></script>
+<script src="~/Scripts/GeneralFunctions.js"></script>
+<script>
+
+    $().ready( function ()
+    {
+        $( "#changePicForm" ).submit( function ( event )
+        {
+            event.preventDefault();
+            var link = _RootName + 'Manage/ChangePicturePost';
+
+            var formData = new FormData( this );
+            formData.append( "customFileName", "@Context.User.Identity.Name" + '-' + $( '#DocFile' )[0].files[0].name )
+            $.ajax( {
+                url: link,
+                type: 'POST',
+                data: formData,
+                // THIS MUST BE DONE FOR FILE UPLOADING
+                contentType: false,
+                processData: false,
+                success: function ( data )
+                {
+
+                    $( '#ProfilePicture' ).attr( 'src', data.filePath )
+                    //$( '#DocPath' ).text( data.filePath );
+                    //$( '#DocPath' ).val( data.filePath );
+                }
+            } )
+
+        } );
+
+    } )
+
+    var _RootName = "@Url.Content("~")";
+    function ShowChangePasswordModal()
+    {
+        debugger;
+
+        $.get( "@Url.Action("ChangePassword","Manage")", function ( data )
+        {
+            $( '#changePassword' ).html( data );
+            $( '#changepassModel' ).modal( { show: true } );
+        } );
+
+    }
+    function ShowChangePictureModal()
+    {
+        debugger;
+
+        $.get( "@Url.Action("ChangePicture","Manage")", function ( data )
+        {
+            debugger;
+            if ( data.indexOf( "Error" ) == -1 )
+            {
+                $( '#changePicture' ).html( data );
+                $( '#myModal' ).modal( { show: true } );
+            }
+            else
+            {
+                CustomAlert( data, 'UserAddedSuccessfully', BootstrapDialog.TYPE_DANGER, function ()
+                {
+                    $( '#myModal' ).modal( "toggle" );
+
+                } );
+            }
+        } );
+
+
+
+    }
+</script>

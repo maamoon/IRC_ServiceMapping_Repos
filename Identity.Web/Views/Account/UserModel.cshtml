@@ -1,0 +1,176 @@
+﻿@model  Identity.Core.IdentityUser
+@{
+
+    bool ViewMode = ViewBag.IsViewMode;
+}
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel"></h4>
+            </div>
+            <div class="login-box">
+                <div class="login-box-body">
+                    <form action="/Account/CreateNewUser" class="form-horizontal" id="CreateNewUserFrm" method="post" role="form">
+                        <input name="__RequestVerificationToken" type="hidden" value="-hrO3eHjuixBLtPMkJcyywHkPiEg35tDINAi-7AIvNcAuqoh6Y2Pj_C4UHUVtwO2AbLbxr0ChKML9qWci9ScOmlRVcZlf1D5SJLeMsOxP-Z4K6UCjslUGCNGAyNJOQcTpSjqGrdC_tEF8-_vqnqAMw2">
+                        <h4 class="col-md-offset-3">@ViewBag.Title</h4>
+                        <hr>
+                        <div class="form-group">
+                            <label class="col-md-offset-1 col-md-4 control-label" for="UserFullName">UserFullName</label>
+                            <div class="col-md-6">
+                                <input class="form-control" id="UserFullName" name="UserFullName" @(ViewMode == true ? "disabled" : "") type="text" value="@Model.Profile.UserFullName" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-offset-1 col-md-4 control-label" for="Email">Email</label>
+                            <div class="col-md-6">
+                                <input class="form-control" id="Email" name="Email" @(ViewMode == true ? "disabled" : "") type="text" value="@Model.Email">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-offset-1 col-md-4 control-label" for="PhoneNumber">PhoneNumber</label>
+                            <div class="col-md-6">
+                                <input class="form-control" id="PhoneNumber" name="PhoneNumber" @(ViewMode == true ? "disabled" : "") type="text" value="@Model.PhoneNumber">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-offset-1 col-md-4 control-label" for="UserRole">UserRole</label>
+                            <div class="col-md-6">
+                                @if (!ViewMode)
+                                {
+                                    <select id="RoleName" class="form-control" name="RoleName">
+                                        <option value="Administrator">
+                                            Administrator
+                                        </option>
+                                        <option value="IRC_User">IRC_User</option>
+                                        <option value="Viewer">Viewer</option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select id="RoleName" class="form-control" @(ViewMode == true ? "disabled" : "") name="RoleName">
+                                        <option @( Model.UserRole.Name == "Administrator" ? "selected" : "") value="Administrator">
+                                            Administrator
+                                        </option>
+                                        <option @( Model.UserRole.Name == "IRC_User" ? "selected" : "") value="IRC_User">IRC_User</option>
+                                        <option @( Model.UserRole.Name == "Viewer" ? "selected" : "") value="Viewer">Viewer</option>
+                                    </select>
+                                }
+
+                            </div>
+                        </div>
+                        <div class="modal-footer" style="padding-top: 10px !important;">
+                            @if (!ViewMode)
+                            {
+                                <button type="submit" id="btnSubmit" class="btn btn-primary" style="width: 95px;height: 30px;">Add User</button>
+                            }
+                            else
+                            {
+                                <button type="button" id="resetSubmit" onclick="ResetPassword('@Model.Email');" class="btn btn-primary" style="height: 30px;">Reset Password</button>
+
+                            }
+                            <button type="button" class="btn btn-default" style="width: 95px;height: 30px;" data-dismiss="modal">Exit</button>
+                        </div>
+                    </form>
+                    @section Scripts {
+                        @Scripts.Render("~/bundles/jqueryval")
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    debugger;
+
+
+    $( "#CreateNewUserFrm" ).validate( {
+        rules: {
+            Email: {
+                required: true,
+                email: true
+            }
+        },
+        messages: {
+            Email: "this field is required",
+        },
+        errorElement: 'div',
+        errorClass: 'help-block',
+        focusInvalid: true,
+        ignore: [],
+        highlight: function ( e )
+        {
+            $( e ).closest( '.form-group' ).removeClass( 'has-info' ).addClass( 'has-error' );
+            if ( $( e ).attr( 'HolderTab' ) != 'undefiend' || $( e ).attr( 'HolderTab' ) != null )
+            {
+                if ( !$( e ).closest( '.form-group' ).hasClass( 'has-info' ) )
+                {
+                    var tabId = $( e ).attr( 'HolderTab' );
+                    $( '#' + tabId ).addClass( 'has-error' );
+                    $( '#' + tabId ).click();
+                }
+            }
+        },
+        success: function ( e )
+        {
+
+            $( e ).closest( '.form-group' ).removeClass( 'has-error' ).addClass( 'has-info' );
+
+            if ( typeof $( e ).closest( '.form-group' ).find( ':input' ).attr( 'parentDiv' ) !== "undefined" || $( e ).closest( '.form-group' ).find( ':input' ).attr( 'parentDiv' ) != null )
+            {
+                var ParentDiv = $( e ).closest( '.form-group' ).find( ':input' ).attr( 'parentDiv' );
+                if ( $( '#' + ParentDiv ).find( '.has-error' ).length == 0 )
+                {
+                    var tabId = $( e ).closest( '.form-group' ).find( ':input' ).attr( 'HolderTab' );
+                    $( '#' + tabId ).removeClass( 'has-error' );
+                }
+                // $('#' + tabId).click();
+            }
+            $( e ).remove();
+        },
+        errorPlacement: function ( error, element )
+        {
+
+            if ( element.attr( 'HolderTab' ) != 'undefiend' || element.attr( 'HolderTab' ) != null )
+            {
+                if ( !element.closest( '.form-group' ).hasClass( 'has-info' ) )
+                {
+                    var tabId = element.attr( 'HolderTab' );
+                    $( '#' + tabId ).addClass( 'has-error' );
+                    $( '#' + tabId ).click();
+                }
+            }
+            if ( element.is( 'input[type=checkbox]' ) || element.is( 'input[type=radio]' ) )
+            {
+
+                var controls = element.closest( 'div[class*="col-"]' );
+                if ( controls.find( ':checkbox,:radio' ).length > 1 ) controls.append( error );
+                else error.insertAfter( element.nextAll( '.lbl:eq(0)' ).eq( 0 ) );
+            }
+            else if ( element.is( 'select' ) )
+            {
+
+                error.insertAfter( element.siblings( '[class*="select2-container"]:eq(0)' ) );
+            }
+            else if ( element.is( '.chosen-select' ) )
+            {
+
+                error.insertAfter( element.siblings( '[class*="chosen-container"]:eq(0)' ) );
+            }
+            else
+            {
+                error.insertAfter( element );
+            }
+
+        },
+        submitHandler: function ( form )
+        {
+            debugger;
+            SubmitForm();
+        }
+    } );
+
+</script>
